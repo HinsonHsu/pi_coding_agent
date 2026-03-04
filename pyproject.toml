@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pi-coding-agent"
+version = "0.1.0"
+description = "Python coding agent with read, bash, edit, write tools (mirrors pi TypeScript coding-agent)"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+    "openai>=1.0.0",
+    "pydantic>=2.0",
+    "prompt-toolkit>=3.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+pi-py = "pi_coding_agent.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pi_coding_agent*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
