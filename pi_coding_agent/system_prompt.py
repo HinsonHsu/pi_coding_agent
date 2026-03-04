@@ -2,11 +2,15 @@
 
 from datetime import datetime
 
+from .skill import format_skills_for_prompt, load_skills
+
 
 def build_system_prompt(
     cwd: str,
     *,
     selected_tools: list[str] | None = None,
+    include_skills: bool = True,
+    skill_paths: list[str] | None = None,
 ) -> str:
     tools = selected_tools or ["read", "bash", "edit", "write"]
     tool_descriptions = {
@@ -29,8 +33,13 @@ def build_system_prompt(
     ]
     guidelines_text = "\n".join(f"- {g}" for g in guidelines)
 
+    skills_text = ""
+    if include_skills:
+        skills, _warnings = load_skills(cwd, skill_paths=skill_paths)
+        skills_text = format_skills_for_prompt(skills)
+
     now = datetime.now().strftime("%A, %B %d, %Y, %I:%M:%S %p %Z")
-    return f"""You are an expert coding assistant operating inside pi, a coding agent harness. You help users by reading files, executing commands, editing code, and writing new files.
+    base = f"""You are an expert coding assistant operating inside pi, a coding agent harness. You help users by reading files, executing commands, editing code, and writing new files.
 
 Available tools:
 {tools_list}
@@ -40,3 +49,6 @@ Guidelines:
 
 Current date and time: {now}
 Current working directory: {cwd}"""
+    if skills_text:
+        return base + skills_text
+    return base
